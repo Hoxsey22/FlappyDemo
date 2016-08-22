@@ -3,6 +3,7 @@ package com.hoxsey.flappydemo.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hoxsey.flappydemo.FlappyDemo;
 
 /**
@@ -11,6 +12,7 @@ import com.hoxsey.flappydemo.FlappyDemo;
 public class MenuState extends State {
     private Texture background;
     private Texture playBtn;
+    private Stage stage;
 
     public MenuState(GameStateManager gsm) {
         super(gsm);

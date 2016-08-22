@@ -15,7 +15,7 @@ public class FlappyDemo extends ApplicationAdapter {
 	private GameStateManager gsm;
 	private SpriteBatch batch;
 	private Music music;
-	private Hud hud;
+	public Hud hud;
 	
 	@Override
 	public void create () {
@@ -27,6 +27,7 @@ public class FlappyDemo extends ApplicationAdapter {
 		music.play();
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		gsm.push(new MenuState(gsm));
+		//hud = new Hud(batch);
 
 	}
 
@@ -35,8 +36,7 @@ public class FlappyDemo extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		gsm.update(Gdx.graphics.getDeltaTime());
 		gsm.render(batch);
-
-
+		//hud.stage.draw();
 	}
 	
 	@Override

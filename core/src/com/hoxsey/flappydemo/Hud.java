@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
@@ -21,23 +22,58 @@ public class Hud {
     private Integer highscore;
     private Label scoreLabel;
     private Label highscoreLabel;
+    private Label highscoreTitleLabel;
 
-    private Table table;
+    private Table tableCurrentScore;
+    private Table tableHighScore;
+
 
 
     public Hud(SpriteBatch sb)    {
         score = 0;
         highscore = 0;
 
-        viewport = new FitViewport(FlappyDemo.WIDTH, FlappyDemo.HEIGHT, new OrthographicCamera());
-        stage = new Stage(viewport,sb);
+        stage = new Stage(new ScreenViewport(),sb);
 
         scoreLabel = new Label(String.format("%03d",score), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        scoreLabel.setFontScale(5);
         highscoreLabel = new Label(String.format("%03d",highscore), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        highscoreTitleLabel = new Label("High Score: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        highscoreLabel.setFontScale(3);
+        highscoreTitleLabel.setFontScale(3);
 
-        table = new Table();
-        table.add(scoreLabel).top().center();
-        table.add(highscoreLabel).bottom().right();
-        stage.addActor(table);
+        tableCurrentScore = new Table();
+        tableCurrentScore.debug();
+        tableCurrentScore.setFillParent(true);
+        tableCurrentScore.add(scoreLabel).center().top().padTop(10).expand();
+        stage.addActor(tableCurrentScore);
+
+        tableHighScore = new Table();
+        tableHighScore.debug();
+        tableHighScore.setFillParent(true);
+        tableHighScore.add(highscoreTitleLabel).bottom().right();
+        tableHighScore.add(highscoreLabel).bottom().right().padRight(10).expandY();
+        stage.addActor(tableHighScore);
+
+    }
+
+    public void addPoint()  {
+        score++;
+        scoreLabel.setText(String.format("%03d", score));
+    }
+
+    public void resetScore()    {
+        score = 0;
+    }
+    public Integer getHighscore()   {
+        if(score > highscore)
+            return score;
+        else
+            return highscore;
+    }
+
+    public void changeHighScore(Integer hs)  {
+        highscore = hs;
+        highscoreLabel.setText(String.format("%03d", highscore));
     }
 }

@@ -1,10 +1,13 @@
 package com.hoxsey.flappydemo.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hoxsey.flappydemo.FlappyDemo;
 import com.hoxsey.flappydemo.Hud;
 import com.hoxsey.flappydemo.sprites.Bird;
@@ -23,12 +26,16 @@ public class PlayState extends State {
     private Texture ground;
     private Vector2 groundPos1, groundPos2;
     private Hud hud;
-
+    private Stage stage;
+    private Integer highscore;
+    private Preferences prefs;
+    private boolean isNewHighScore;
 
     private Array<Tube> tubes;
 
     protected PlayState(GameStateManager gsm) {
         super(gsm);
+        //stage = new Stage(new ScreenViewport());
         bird = new Bird(25, 300);
         cam.setToOrtho(false, FlappyDemo.WIDTH/2, FlappyDemo.HEIGHT/2);
         bg = new Texture("bg.png");
@@ -40,6 +47,12 @@ public class PlayState extends State {
         ground = new Texture("ground.png");
         groundPos1 = new Vector2(cam.position.x - cam.viewportWidth/2, GROUND_Y_OFFSET);
         groundPos2 = new Vector2((cam.position.x - cam.viewportWidth/2) + ground.getWidth(), GROUND_Y_OFFSET);
+        hud = new Hud(gsm.batch);
+        prefs = Gdx.app.getPreferences("highscore");
+        highscore = prefs.getInteger("hs", 0);
+        hud.changeHighScore(highscore);
+        isNewHighScore = false;
+
     }
 
     @Override
@@ -60,13 +73,18 @@ public class PlayState extends State {
             if(cam.position.x - (cam.viewportWidth/2) > tube.getPosTopTube().x + tube.getTopTube().getWidth())    {
                 tube.reposition(tube.getPosTopTube().x + (Tube.TUBE_WIDTH + TUBE_SPACING) * TUBE_COUNT);
             }
+            if(tube.clearedTheTube(bird.getBounds()))    {
+                hud.addPoint();
+            }
 
             if(tube.collides(bird.getBounds()))    {
-                gsm.set(new GameOverState(gsm));
+                checkHighScore();
+                gsm.set(new GameOverState(gsm, isNewHighScore));
             }
         }
         if(bird.getPosition().y <= ground.getHeight() + GROUND_Y_OFFSET)    {
-            gsm.set(new GameOverState(gsm));
+            checkHighScore();
+            gsm.set(new GameOverState(gsm, isNewHighScore));
         }
         cam.update();
     }
@@ -84,6 +102,7 @@ public class PlayState extends State {
             sb.draw(ground, groundPos1.x, groundPos1.y);
             sb.draw(ground, groundPos2.x, groundPos2.y);
         sb.end();
+        hud.stage.draw();
     }
 
     @Override
@@ -104,5 +123,15 @@ public class PlayState extends State {
         if((cam.position.x - cam.viewportWidth/2) > (groundPos2.x + ground.getWidth())) {
             groundPos2.add(ground.getWidth() * 2, 0);
         }
+    }
+
+    public void checkHighScore() {
+        Integer tempScore = hud.getHighscore();
+        if(tempScore > highscore) {
+            isNewHighScore = true;
+            prefs.putInteger("hs", tempScore);
+            prefs.flush();
+        }
+
     }
 }

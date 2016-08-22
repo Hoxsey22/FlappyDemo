@@ -11,9 +11,9 @@ public class GameStateManager {
     private Stack<State> states;
     public SpriteBatch batch;
 
-    public GameStateManager(SpriteBatch sb)   {
+    public GameStateManager(SpriteBatch sp)   {
         states = new Stack<State>();
-        batch = sb;
+        batch = sp;
     }
     public void push(State state)   {
         states.push(state);
