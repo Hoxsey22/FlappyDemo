@@ -1,5 +1,6 @@
 package com.hoxsey.flappydemo;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  * Created by Hoxsey on 8/20/2016.
  */
 public class Hud {
+    private BitmapFont font;
     public Stage stage;
     private Viewport viewport;
 
@@ -32,27 +34,26 @@ public class Hud {
     public Hud(SpriteBatch sb)    {
         score = 0;
         highscore = 0;
+        font = new BitmapFont(Gdx.files.internal("font/fb.fnt"),Gdx.files.internal("font/fb.png"),false);
 
         stage = new Stage(new ScreenViewport(),sb);
 
-        scoreLabel = new Label(String.format("%03d",score), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        scoreLabel.setFontScale(5);
-        highscoreLabel = new Label(String.format("%03d",highscore), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        highscoreTitleLabel = new Label("High Score: ", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        highscoreLabel.setFontScale(3);
-        highscoreTitleLabel.setFontScale(3);
+        scoreLabel = new Label(String.format("%03d",score), new Label.LabelStyle(font, Color.WHITE));
+        scoreLabel.setFontScale(4);
+        highscoreLabel = new Label(String.format("%03d",highscore), new Label.LabelStyle(font, Color.WHITE));
+        highscoreTitleLabel = new Label("High Score:", new Label.LabelStyle(font, Color.WHITE));
+        highscoreLabel.setFontScale(2);
+        highscoreTitleLabel.setFontScale(2);
 
         tableCurrentScore = new Table();
-        tableCurrentScore.debug();
         tableCurrentScore.setFillParent(true);
         tableCurrentScore.add(scoreLabel).center().top().padTop(10).expand();
         stage.addActor(tableCurrentScore);
 
         tableHighScore = new Table();
-        tableHighScore.debug();
         tableHighScore.setFillParent(true);
-        tableHighScore.add(highscoreTitleLabel).bottom().right();
-        tableHighScore.add(highscoreLabel).bottom().right().padRight(10).expandY();
+        tableHighScore.add(highscoreTitleLabel).center().bottom();
+        tableHighScore.add(highscoreLabel).bottom().expandY();
         stage.addActor(tableHighScore);
 
     }

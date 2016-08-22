@@ -16,36 +16,49 @@ import com.hoxsey.flappydemo.FlappyDemo;
  * Created by Hoxsey on 8/19/2016.
  */
 public class GameOverState extends State {
+    private Label newTitle;
     private Label hsTitle;
     private Texture bg;
-    private Texture gameover;
+    private Label gameover;
     private Label highscore;
     private Preferences savedData;
     private Stage gameoverStage;
     private Table table;
+    private BitmapFont font;
 
     protected GameOverState(GameStateManager gsm, boolean isNewhighscore) {
         super(gsm);
+
         cam.setToOrtho(false, FlappyDemo.WIDTH / 2, FlappyDemo.HEIGHT / 2);
         bg = new Texture("bg.png");
-        gameover = new Texture("gameover.png");
+
+
         gameoverStage = new Stage(new ScreenViewport(), gsm.batch);
+
         savedData = Gdx.app.getPreferences("highscore");
 
-        if(isNewhighscore)
-            hsTitle = new Label("NEW HIGH SCORE:", new Label.LabelStyle(new BitmapFont(), Color.YELLOW));
-        else
-            hsTitle = new Label("HIGH SCORE:", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        font = new BitmapFont(Gdx.files.internal("font/fb.fnt"),Gdx.files.internal("font/fb.png"),false);
 
-        highscore = new Label(String.format("%03d",savedData.getInteger("hs",0)), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        highscore.setFontScale(3);
+        newTitle = new Label("NEW", new Label.LabelStyle(font, Color.WHITE));
+        hsTitle = new Label("HIGH SCORE:", new Label.LabelStyle(font, Color.WHITE));
+        gameover = new Label("GAMEOVER", new Label.LabelStyle(font, Color.RED));
+        highscore = new Label(String.format("%03d",savedData.getInteger("hs",0)), new Label.LabelStyle(font, Color.WHITE));
+
+        gameover.setFontScale(5);
+        highscore.setFontScale(4);
         hsTitle.setFontScale(3);
+        newTitle.setFontScale(4);
 
         table = new Table();
         table.setFillParent(true);
-        table.add(hsTitle);
+        table.padTop(170);
+        if(isNewhighscore)  {
+            table.add(newTitle).row();
+        }
+        table.add(hsTitle).padTop(10);
         table.row();
-        table.add(highscore).center().top().pad(10).expand();
+        table.add(highscore).center().top().expand().padTop(10).row();
+        table.add(gameover).center().padBottom(200);
 
         gameoverStage.addActor(table);
 
@@ -68,7 +81,6 @@ public class GameOverState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
             sb.draw(bg, 0, 0);
-            sb.draw(gameover, (cam.position.x)- (gameover.getWidth()/2), (cam.position.y));
         sb.end();
         gameoverStage.draw();
     }
@@ -76,7 +88,6 @@ public class GameOverState extends State {
     @Override
     public void dispose() {
         bg.dispose();
-        gameover.dispose();
         System.out.println("Game Over State Disposed");
     }
 }

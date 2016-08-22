@@ -2,6 +2,7 @@ package com.hoxsey.flappydemo.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -30,6 +31,7 @@ public class PlayState extends State {
     private Integer highscore;
     private Preferences prefs;
     private boolean isNewHighScore;
+    private Sound ding;
 
     private Array<Tube> tubes;
 
@@ -37,21 +39,29 @@ public class PlayState extends State {
         super(gsm);
         //stage = new Stage(new ScreenViewport());
         bird = new Bird(25, 300);
+
         cam.setToOrtho(false, FlappyDemo.WIDTH/2, FlappyDemo.HEIGHT/2);
+
         bg = new Texture("bg.png");
         tubes = new Array<Tube>();
 
         for(int i = 1; i <= TUBE_COUNT; i++)   {
             tubes.add(new Tube(i * (TUBE_SPACING + Tube.TUBE_WIDTH)));
         }
+
         ground = new Texture("ground.png");
         groundPos1 = new Vector2(cam.position.x - cam.viewportWidth/2, GROUND_Y_OFFSET);
         groundPos2 = new Vector2((cam.position.x - cam.viewportWidth/2) + ground.getWidth(), GROUND_Y_OFFSET);
+
         hud = new Hud(gsm.batch);
+
         prefs = Gdx.app.getPreferences("highscore");
         highscore = prefs.getInteger("hs", 0);
         hud.changeHighScore(highscore);
+
         isNewHighScore = false;
+
+        ding = Gdx.audio.newSound(Gdx.files.internal("mariocoin.mp3"));
 
     }
 
@@ -75,6 +85,7 @@ public class PlayState extends State {
             }
             if(tube.clearedTheTube(bird.getBounds()))    {
                 hud.addPoint();
+                ding.play(0.5f);
             }
 
             if(tube.collides(bird.getBounds()))    {
@@ -110,6 +121,7 @@ public class PlayState extends State {
         bg.dispose();
         bird.dispose();
         ground.dispose();
+        ding.dispose();
         for(Tube tube : tubes)   {
             tube.dispose();
         }
